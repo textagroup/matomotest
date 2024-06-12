@@ -4,24 +4,31 @@
         <title>Update Password</title>
         <style>
             .em {color: orange}
+            .error { color: red }
         </style>
     </head>
     <body style="width: 100%; margin: 10%;">
         <form method="post" action="update_password.php">
             <h1>Update Password #NAME#</h1>
-            <p style="color:red;">#ERROR#</p>
+            <p class="error">#ERROR#</p>
+            <p>
+                <em class="error" id="password_error">Password must be at least 5 characters long and contain a number</em>
+            </p>
+            <p>
+                <em class="error" id="matching_password_error">Passwords need to match</em>
+            </p>
             <label>Password</label>
             <input id='passwordBox' name="password">
-            <em id="password_error" style="visibility: hidden">(must be 5 characters long and contain a number)</em>
             <Script>
                 password = document.getElementById('passwordBox').value
                 if (password.length < 5) {
                     document.getElementById('password_error').style.visibility = "visible";
                 }
             </Script>
-            <label>Confirm Password</label><input name="password2">
+            <label>Confirm Password</label><input id="confirmPassword" name="password2">
             <input type="hidden" name="token" value="#TOKEN#">
             <input type="submit" value="Update">
         </form>
+        <script src="./js/script.js"></script>
     </body>
 </html>
