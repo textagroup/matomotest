@@ -77,14 +77,18 @@ class PasswordUtils
             $this->formSubmitted($userId);
         }
 
+        $token = $this->generateToken();
+
         $search = [
             '#NAME#',
             '#ERROR#',
+            '#TOKEN#',
         ];
 
         $replace = [
             $this->getName($userId),
             $this->error,
+            $token,
         ];
 
         return str_replace($search, $replace, $html);
@@ -107,6 +111,13 @@ class PasswordUtils
     private function formSubmitted($userId = 0) {
         $password = $_REQUEST['password'];
         $password2 = $_REQUEST['password2'];
+        $token = $_POST['token'];
+
+        $sessionToken = $_SESSION['token'];
+
+        if ($token != $sessionToken) {
+            return false;
+        }
 
         if ($userId && ($password || $password2)) {
             if (empty($password) || empty($password2)) {
@@ -131,9 +142,6 @@ class PasswordUtils
     }
 
     private function setPassword($userId, $password) {
-        // Was going to use a salt however according to the PHP docs this has been deprecated
-        //$salt = bin2hex(random_bytes(8));
-
         // hash password
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
@@ -142,6 +150,12 @@ class PasswordUtils
         $query = $this->db->prepare($sql);
         $query->bind_param('si', $hashedPassword, $userId);
         $result = $query->execute();
+    }
+
+    private function generateToken() {
+        $token = bin2hex(random_bytes(8));
+        $_SESSION['token'] = $token;
+        return $token;
     }
 
 }

@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once('PasswordUtils.php');
 
 $passwordUtils = new PasswordUtils();
