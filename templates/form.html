@@ -19,12 +19,6 @@
             </p>
             <label>Password</label>
             <input id='passwordBox' name="password">
-            <Script>
-                password = document.getElementById('passwordBox').value
-                if (password.length < 5) {
-                    document.getElementById('password_error').style.visibility = "visible";
-                }
-            </Script>
             <label>Confirm Password</label><input id="confirmPassword" name="password2">
             <input type="hidden" name="token" value="#TOKEN#">
             <input id="submit" type="submit" value="Update">
