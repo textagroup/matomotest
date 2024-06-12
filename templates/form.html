@@ -1,0 +1,25 @@
+<html>
+<head>
+    <style>
+        .em {color: orange}
+    </style>
+</head>
+<body style="width: 100%; margin: 10%;">
+<form method="post" action="udate_password.php">
+    <h1>Update Password #NAME#</h1>
+    </h1>
+    <p style="color:red;">#ERROR#</p>
+    <label>Password</label>
+    <input id='passwordBox' name="password">
+    <em id="password_error" style="visibility: hidden">(must be 5 charicters long and contain a number)</em>
+    <Script>
+        password = document.getElementById('passwordBox').value
+        if (password.length < 5) {
+            document.getElementById('password_error').style.visibility = "visible";
+        }
+    </Script>
+    <label>Confirm Password</label><input name="password2">
+    <input type="hidden" value="#TOKEN#">
+    <input type="submit" value="Update">
+</form>
+</html>
