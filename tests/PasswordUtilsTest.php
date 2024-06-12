@@ -11,5 +11,8 @@ final class PasswordUtilsTest extends TestCase
         $passwordUtils = new PasswordUtils();
         $html = $passwordUtils->fetchTemplate();
         $this->assertNotEmpty($html);
+
+        $token = $_SESSION['token'];
+        $this->assertStringContainsString($token, $html);
     }
 }
