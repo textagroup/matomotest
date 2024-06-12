@@ -13,9 +13,7 @@ class PasswordUtils
 {
     private $db;
 
-    private $error = '';
-
-    private $defaultTemplate = './templates/form.html';
+    private $defaultTemplate = './templates/bootstrap.html';
 
     function __construct() {
         $this->db = $this->connect();
@@ -39,7 +37,6 @@ class PasswordUtils
 
         foreach ($keys as $key => $value) {
             if (!isset($_ENV[$value])) {
-                $this->error = "A error has occured";
                 throw new Exception("$key needs to exist in a .env file");
             }
             $$key = $_ENV[$value];
@@ -59,21 +56,22 @@ class PasswordUtils
             ? $_COOKIE['user_id']
             : 0;
 
+        $message = '';
         if ($userId > 0) {
-            $this->formSubmitted($userId);
+            $message = $this->formSubmitted($userId);
         }
 
         $token = $this->generateToken();
 
         $search = [
             '#NAME#',
-            '#ERROR#',
+            '#MESSAGE#',
             '#TOKEN#',
         ];
 
         $replace = [
             $this->getName($userId),
-            $this->error,
+            $message,
             $token,
         ];
 
@@ -112,26 +110,30 @@ class PasswordUtils
             return false;
         }
 
+        $error = null;
+
         if ($userId && ($password || $password2)) {
             if (empty($password) || empty($password2)) {
-                $this->error = 'Both password fields need to filled in!';
-                return;
+                $error = 'Both password fields need to filled in!';
             }
             if ($password != $password2) {
-                $this->error = 'Passwords need to match!';
-                return;
+                $error = 'Passwords need to match!';
             }
             if (!preg_match('/\d/', $password)) {
-                $this->error = 'Password needs to contain at least 1 digit!';
-                return;
+                $error = 'Password needs to contain at least 1 digit!';
             }
             if (strlen($password) < 5) {
-                $this->error = 'Password needs to be at least 5 characters';
-                return;
+                $error = 'Password needs to be at least 5 characters';
             }
 
+            // js validation should catch this before we get here
+            if ($error) {
+                return $error;
+            }
             $this->setPassword($userId, $password);
+            return 'Password has been updated.';
         }
+        return 'Something has failed';
     }
 
     private function setPassword($userId, $password) {
@@ -153,7 +155,6 @@ class PasswordUtils
             "Name varchar(64))";
         $exists = $this->db->query($sql);
         if (!$exists) {
-            $this->error = "User table error";
             throw new Exception("Error creating user table");
         }
         return true;
