@@ -27,7 +27,6 @@ class PasswordUtils
         $sql = "CREATE TABLE IF NOT EXISTS user (" .
             "id int," .
             "Password varchar(255)," .
-            "Salt varchar(64)," .
             "Name varchar(64))";
         $exists = $this->db->query($sql);
         if (!$exists) {
@@ -126,7 +125,23 @@ class PasswordUtils
                 $this->error = 'Password needs to be at least 5 characters';
                 return;
             }
+
+            $this->setPassword($userId, $password);
         }
+    }
+
+    private function setPassword($userId, $password) {
+        // Was going to use a salt however according to the PHP docs this has been deprecated
+        //$salt = bin2hex(random_bytes(8));
+
+        // hash password
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        // store password
+        $sql = "UPDATE user SET password = ? WHERE id = ?";
+        $query = $this->db->prepare($sql);
+        $query->bind_param('si', $hashedPassword, $userId);
+        $result = $query->execute();
     }
 
 }
