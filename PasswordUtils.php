@@ -22,20 +22,6 @@ class PasswordUtils
         $this->createUserTable();
     }
 
-    // create db table
-    private function createUserTable(): bool {
-        $sql = "CREATE TABLE IF NOT EXISTS user (" .
-            "id int," .
-            "Password varchar(255)," .
-            "Name varchar(64))";
-        $exists = $this->db->query($sql);
-        if (!$exists) {
-            $this->error = "User table error";
-            throw new Exception("Error creating user table");
-        }
-        return true;
-    }
-
     /**
      * Method to connect to database with values loaded from .env file
      * TODO confirm it is only called once
@@ -98,6 +84,13 @@ class PasswordUtils
         setCookie('user_id', 1);
     }
 
+
+    private function generateToken() {
+        $token = bin2hex(random_bytes(8));
+        $_SESSION['token'] = $token;
+        return $token;
+    }
+
     private function getName($id = 0) {
         $sql = "SELECT Name from user where id = ?";
         $query = $this->db->prepare($sql);
@@ -152,10 +145,18 @@ class PasswordUtils
         $result = $query->execute();
     }
 
-    private function generateToken() {
-        $token = bin2hex(random_bytes(8));
-        $_SESSION['token'] = $token;
-        return $token;
+    // create db table
+    private function createUserTable(): bool {
+        $sql = "CREATE TABLE IF NOT EXISTS user (" .
+            "id int," .
+            "Password varchar(255)," .
+            "Name varchar(64))";
+        $exists = $this->db->query($sql);
+        if (!$exists) {
+            $this->error = "User table error";
+            throw new Exception("Error creating user table");
+        }
+        return true;
     }
 
 }
