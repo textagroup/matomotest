@@ -74,6 +74,10 @@ class PasswordUtils
             ? $_COOKIE['user_id']
             : 0;
 
+        if ($userId > 0) {
+            $this->formSubmitted($userId);
+        }
+
         $search = [
             '#NAME#',
             '#ERROR#',
@@ -99,6 +103,30 @@ class PasswordUtils
         $result = $query->get_result();
         $user = $result->fetch_array(MYSQLI_ASSOC);
         return isset($user['Name']) ? $user['Name'] : '';
+    }
+
+    private function formSubmitted($userId = 0) {
+        $password = $_REQUEST['password'];
+        $password2 = $_REQUEST['password2'];
+
+        if ($userId && ($password || $password2)) {
+            if (empty($password) || empty($password2)) {
+                $this->error = 'Both password fields need to filled in!';
+                return;
+            }
+            if ($password != $password2) {
+                $this->error = 'Passwords need to match!';
+                return;
+            }
+            if (!preg_match('/\d/', $password)) {
+                $this->error = 'Password needs to contain at least 1 digit!';
+                return;
+            }
+            if (strlen($password) < 5) {
+                $this->error = 'Password needs to be at least 5 characters';
+                return;
+            }
+        }
     }
 
 }
