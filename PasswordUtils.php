@@ -83,13 +83,7 @@ class PasswordUtils
     }
 
 
-    private function generateToken() {
-        $token = bin2hex(random_bytes(8));
-        $_SESSION['token'] = $token;
-        return $token;
-    }
-
-    private function getName($id = 0) {
+    public function getName($id = 0) {
         $sql = "SELECT Name from user where id = ?";
         $query = $this->db->prepare($sql);
         $query->bind_param('i', $id);
@@ -97,6 +91,33 @@ class PasswordUtils
         $result = $query->get_result();
         $user = $result->fetch_array(MYSQLI_ASSOC);
         return isset($user['Name']) ? $user['Name'] : '';
+    }
+
+    public function getPassword($id = 0) {
+        $sql = "SELECT Password from user where id = ?";
+        $query = $this->db->prepare($sql);
+        $query->bind_param('i', $id);
+        $query->execute();
+        $result = $query->get_result();
+        $row = $result->fetch_array(MYSQLI_ASSOC);
+        return isset($row['Password']) ? $row['Password'] : '';
+    }
+
+    public function insertUserRow(int $id, string $name, string $password)
+    {
+        $sql = "INSERT INTO user (id, Name) VALUES(?, ?)";
+        $query = $this->db->prepare($sql);
+        $query->bind_param('is', $id, $name);
+        $query->execute();
+        $this->setPassword($id, $password);
+    }
+
+    public function deleteUserRow(int $id)
+    {
+        $sql = "DELETE FROM user WHERE id = ?";
+        $query = $this->db->prepare($sql);
+        $query->bind_param('i', $id);
+        $query->execute();
     }
 
     private function formSubmitted($userId = 0) {
@@ -159,5 +180,12 @@ class PasswordUtils
         }
         return true;
     }
+
+    private function generateToken() {
+        $token = bin2hex(random_bytes(8));
+        $_SESSION['token'] = $token;
+        return $token;
+    }
+
 
 }
