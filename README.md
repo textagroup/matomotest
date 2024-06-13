@@ -1,6 +1,6 @@
 # Matomo Update Password Test
 
-My attempt at improving a basix update password script using PHP, Javascript, Bootstrap and automated testing.
+My attempt at improving a basic update password script using PHP, Javascript, Bootstrap and automated testing.
 This has been stored in a Git repo so you can see the commit history to see how I approached this test.
 
 ## Installation
@@ -14,7 +14,7 @@ DB_USER="db_user"
 DB_PASSWORD="*******"
 ```
 
-I am using phpdotenv to read the .env files and PHPUnit for backwend unit testing so composer install will need to be run to install
+I am using phpdotenv to read the .env files and PHPUnit for backend unit testing so composer install will need to be run to install
 these dependencies.
 
 ```
@@ -29,13 +29,16 @@ npm install
 
 ## PHP
 
-The PHP code for the script has been moved into it's own class call PasswordUtils.
-If a instance of this class is created it will connect to the DB (providing the .env file is correct) and check if 
-the user tables exists and creates it if it does not exist.
-The html for the update password page is returned by calling a method called fetchTemplate there is a script called update_password.php
+The PHP code for the script has been moved into it's own class called PasswordUtils.
+
+If a instance of this class is created, it will connect to the DB (providing the .env file is correct) and check if 
+the user table exists the table will be created if it does not exist.
+
+The HTML for the update password page is returned by calling a method called fetchTemplate there is a script called update_password.php
 which gives an example of the class being used.
-There is another method testCookie being called which sets a cookie with a id which defaults to 1 but this can be overridden with a different id by providing the
-id as a parameter to the method.
+
+There is another method testCookie being called which sets a cookie with an ID which defaults to 1 but this can be overridden with a different ID by providing the
+ID as a parameter to the method.
 
 ## Testing
 
@@ -49,7 +52,7 @@ vendor/bin/phpunit test/phpunit/
 DB_HOST=localhost DB_USER=test_db_user DB_PASSWORD=******** DB=my_test_site vendor/bin/phpunit test/phpunit
 ```
 
-I have also created a basic WebdriverIO test which can be run with the following commands on different browsers
+I have also created a basic WebdriverIO test which can be run with the following commands on different browsers.
 
 ```
 #chrome
@@ -66,10 +69,12 @@ npx wdio ./wdio.chromium.conf.js
 ## Templates
 
 The HTML for the update password has been moved into a HTML template which has a few placeholders
-which are replaced these placeholders are \#NAME\#, \#MESSAGE\# and \#TOKEN\#
+these are replaced with their respective values.
 
-\#NAME\# is replaced with the name of the user bases on the cookie user id.
+\#NAME\# is replaced with the name of the user based on the cookie user ID.
+
 \#MESSAGE\# is a confirmation or error message that is generated from the PHP code.
+
 \#TOKEN\# is a CSRF token used to secure the form
 
 You can supply the method fetchTemplate with a param to use a different template other than the default template.
@@ -80,7 +85,7 @@ $html = $passwordUtils->fetchTemplate('/path/to/custom/template.html');
 
 ## Security considerations
 
-The PasswordUtils class expects a token to have been set when the form is submitted tjhis is taken care of in
+The PasswordUtils class expects a token to have been set when the form is submitted this is taken care of in
 the default template  but can be implemented by adding the \#TOKEN\# placeholder in any customised templates.
 
 The password is stored in the user table after it has been hashed by the standard password_hash method in PHP.
@@ -88,16 +93,17 @@ The password is stored in the user table after it has been hashed by the standar
 ## Javascript
 
 Vanilla Javascript is being used to validate the passwords match and meet the password criteria.
-The Javascriopt is stored in js/script.js
+
+The Javascript is stored in js/script.js
 
 ## Styling
 
-Basic Bootstrap styling has been used for the default template
+Basic Bootstrap styling has been used for the default template.
 
 ## Potential improvements
 
 Further improvements could be made to the functionality and some of these are listed below.
 
-- Add a Password strength meter
+- Add a password strength meter
 - Add a password generator
 - Use an existing library like [phppass](https://github.com/rchouinard/phpass)
