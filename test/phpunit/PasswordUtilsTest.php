@@ -10,7 +10,16 @@ final class PasswordUtilsTest extends TestCase
     private $utils;
 
     protected function setUp(): void {
-        $this->utils = new PasswordUtils();
+        $host = getenv('DB_HOST');
+        $user = getenv('DB_USER');
+        $pw = getenv('DB_PASSWORD');
+        $db = getenv('DB');
+
+        if ($host && $user && $pw && $db) {
+            $this->utils = new PasswordUtils($host, $user, $pw, $db);
+        } else {
+            $this->utils = new PasswordUtils();
+        }
         $this->utils->insertUserRow(1, 'PHPUnit', 'plaintext');
     }
 
