@@ -9,7 +9,7 @@
     <env name="DB_HOST" value="localhost"/>
     <env name="DB" value="my_test_site"/>
     <env name="DB_USER" value="test_db_user"/>
-    <env name="DB_PASSWORD" value="Pa55word!"/>
+    <env name="DB_PASSWORD" value="********"/>
   </php>
   <source>
     <include>
