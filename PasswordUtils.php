@@ -24,22 +24,24 @@ class PasswordUtils
      * Method to connect to database with values loaded from .env file
      * TODO confirm it is only called once
      */
-    public function connect(): mysqli {
-        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-        $dotenv->load();
+    public function connect($host = null, $user = null, $password = null, $db = null): mysqli {
+        if (!$host || !$user || !$password || $db) {
+            $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+            $dotenv->load();
 
-        $keys = [
-            'host' => 'DB_HOST',
-            'user' => 'DB_USER',
-            'password' => 'DB_PASSWORD',
-            'db' => 'DB'
-        ];
+            $keys = [
+                'host' => 'DB_HOST',
+                'user' => 'DB_USER',
+                'password' => 'DB_PASSWORD',
+                'db' => 'DB'
+            ];
 
-        foreach ($keys as $key => $value) {
-            if (!isset($_ENV[$value])) {
-                throw new Exception("$key needs to exist in a .env file");
+            foreach ($keys as $key => $value) {
+                if (!isset($_ENV[$value])) {
+                    throw new Exception("$key needs to exist in a .env file");
+                }
+                $$key = $_ENV[$value];
             }
-            $$key = $_ENV[$value];
         }
         return new mysqli($host, $user, $password, $db);
     }
