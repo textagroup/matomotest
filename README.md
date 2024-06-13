@@ -42,7 +42,11 @@ id as a parameter to the method.
 A PHPUnit test has been written and can be run by running the following from a command line.
 
 ```
+# with db details stored in phpunit.xml
 vendor/bin/phpunit test/phpunit/
+
+# with db details swet on the command line
+DB_HOST=localhost DB_USER=test_db_user DB_PASSWORD=******** DB=my_test_site vendor/bin/phpunit test/phpunit
 ```
 
 I have also created a basic WebdriverIO test which can be run with the following commands on different browsers
