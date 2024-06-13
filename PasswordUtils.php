@@ -105,9 +105,10 @@ class PasswordUtils
 
     public function insertUserRow(int $id, string $name, string $password)
     {
-        $sql = "INSERT INTO user (id, Name) VALUES(?, ?)";
+        $sql = 'INSERT INTO user (id, Name) VALUES(?, ?) ' .
+            'ON DUPLICATE KEY UPDATE Name = ?';
         $query = $this->db->prepare($sql);
-        $query->bind_param('is', $id, $name);
+        $query->bind_param('iss', $id, $name, $name);
         $query->execute();
         $this->setPassword($id, $password);
     }
@@ -171,7 +172,7 @@ class PasswordUtils
     // create db table
     private function createUserTable(): bool {
         $sql = "CREATE TABLE IF NOT EXISTS user (" .
-            "id int," .
+            "id int NOT NULL PRIMARY KEY," .
             "Password varchar(255)," .
             "Name varchar(64))";
         $exists = $this->db->query($sql);
