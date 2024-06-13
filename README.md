@@ -17,7 +17,15 @@ DB_PASSWORD="*******"
 I am using phpdotenv to read the .env files and PHPUnit for backwend unit testing so composer install will need to be run to install
 these dependencies.
 
-```composer install```
+```
+composer install
+```
+
+The WebdriverIO test relies on npm packages so these will need to be installed with following command.
+
+```
+npm install
+```
 
 ## PHP
 
@@ -26,4 +34,66 @@ If a instance of this class is created it will connect to the DB (providing the 
 the user tables exists and creates it if it does not exist.
 The html for the update password page is returned by calling a method called fetchTemplate there is a script called update_password.php
 which gives an example of the class being used.
-There is another method testCookie being called which sets a cookie with a id which defaults to 1 but that can be overridden.
+There is another method testCookie being called which sets a cookie with a id which defaults to 1 but this can be overridden with a different id by providing the
+id as a parameter to the method.
+
+## Testing
+
+A PHPUnit test has been written and can be run by running the following from a command line.
+
+```
+vendor/bin/phpunit test/phpunit/
+```
+
+I have also created a basic WebdriverIO test which can be run with the following commands on different browsers
+
+```
+#chrome
+npm run wdio
+
+#firefox
+npx wdio ./wdio.firefox.conf.js
+
+#chromium
+npx wdio ./wdio.chromium.conf.js
+```
+
+
+## Templates
+
+The HTML for the update password has been moved into a HTML template which has a few placeholders
+which are replaced these placeholders are \#NAME\#, \#MESSAGE\# and \#TOKEN\#
+
+\#NAME\# is replaced with the name of the user bases on the cookie user id.
+\#MESSAGE\# is a confirmation or error message that is generated from the PHP code.
+\#TOKEN\# is a CSRF token used to secure the form
+
+You can supply the method fetchTemplate with a param to use a different template other than the default template.
+
+```
+$html = $passwordUtils->fetchTemplate('/path/to/custom/template.html');
+```
+
+## Security considerations
+
+The PasswordUtils class expects a token to have been set when the form is submitted tjhis is taken care of in
+the default template  but can be implemented by adding the \#TOKEN\# placeholder in any customised templates.
+
+The password is stored in the user table after it has been hashed by the standard password_hash method in PHP.
+
+## Javascript
+
+Vanilla Javascript is being used to validate the passwords match and meet the password criteria.
+The Javascriopt is stored in js/script.js
+
+## Styling
+
+Basic Bootstrap styling has been used for the default template
+
+## Potential improvements
+
+Further improvements could be made to the functionality and some of these are listed below.
+
+- Add a Password strength meter
+- Add a password generator
+- Use an existing library like [phppass](https://github.com/rchouinard/phpass)
