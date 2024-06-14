@@ -107,3 +107,9 @@ Further improvements could be made to the functionality and some of these are li
 - Add a password strength meter
 - Add a password generator
 - Use an existing library like [phppass](https://github.com/rchouinard/phpass)
+
+## Demo video
+
+Demo video of form nbeing uses and PHPUnit and WebdriverIO tests running
+
+![Demo](demo.webm)
