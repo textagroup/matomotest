@@ -48,7 +48,7 @@ A PHPUnit test has been written and can be run by running the following from a c
 # with db details stored in phpunit.xml
 vendor/bin/phpunit test/phpunit/
 
-# with db details swet on the command line
+# with db details set on the command line
 DB_HOST=localhost DB_USER=test_db_user DB_PASSWORD=******** DB=my_test_site vendor/bin/phpunit test/phpunit
 ```
 
