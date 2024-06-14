@@ -1,9 +1,11 @@
-const { expect } = require('@wdio/globals')
-const Page = require('../pageobjects/page')
+const { expect } = require('@wdio/globals');
+const Page = require('../pageobjects/page');
+const { env } = require('node:process');
 
 describe('My update password application', () => {
     it('should be able to update a password', async () => {
-        await browser.url('http://matomotest/update_password.php');
+        const url = env.npm_config_url ?? 'http://matomotest';
+        await browser.url(url + '/update_password.php');
 
         const primaryAlert = await $('div.alert.alert-primary');
         await expect(primaryAlert).toHaveText('Update password');

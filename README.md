@@ -58,6 +58,9 @@ I have also created a basic WebdriverIO test which can be run with the following
 #chrome
 npm run wdio
 
+#use a different URL
+npm run wdio --url=http://mydevurl
+
 #firefox
 npx wdio ./wdio.firefox.conf.js
 
