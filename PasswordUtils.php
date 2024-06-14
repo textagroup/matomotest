@@ -11,20 +11,29 @@ require __DIR__ . '/vendor/autoload.php';
  */
 class PasswordUtils
 {
-    private $db;
+    private $_db;
 
-    private $defaultTemplate = './templates/bootstrap.html';
+    private $_defaultTemplate = './templates/bootstrap.html';
 
-    function __construct() {
-        $this->db = $this->connect();
-        $this->createUserTable();
+    function __construct()
+    {
+        $this->_db = $this->connect();
+        $this->_createUserTable();
     }
 
     /**
      * Method to connect to database with values loaded from .env file
-     * TODO confirm it is only called once
+     *
+     * @param string $host Database host
+     * @param string $user Database username
+     * @param string $password Database password
+     * @param string $db Database name
+     *
+     * @return void
      */
-    public function connect($host = null, $user = null, $password = null, $db = null): mysqli {
+    public function connect(
+        $host = null, $user = null, $password = null, $db = null
+    ): mysqli {
         if (!$host || !$user || !$password || $db) {
             $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
             $dotenv->load();
@@ -46,12 +55,26 @@ class PasswordUtils
         return new mysqli($host, $user, $password, $db);
     }
 
-    public function __destruct() {
-        $this->db->close();
+    /**
+     * Closes the DB connection
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        $this->_db->close();
     }
 
-    public function fetchTemplate($path = null) : string {
-        $path = $path ?? $this->defaultTemplate;
+    /**
+     * Fetch the HTML from a template
+     *
+     * @param string $path location of template file
+     *
+     * @return string
+     */
+    public function fetchTemplate($path = null) : string
+    {
+        $path = $path ?? $this->_defaultTemplate;
         $html = file_get_contents($path);
 
         $userId = isset($_COOKIE['user_id'])
@@ -60,10 +83,10 @@ class PasswordUtils
 
         $message = '';
         if ($userId > 0) {
-            $message = $this->formSubmitted($userId);
+            $message = $this->_formSubmitted($userId);
         }
 
-        $token = $this->generateToken();
+        $token = $this->_generateToken();
 
         $search = [
             '#NAME#',
@@ -80,14 +103,30 @@ class PasswordUtils
         return str_replace($search, $replace, $html);
     }
 
-    public function testCookie($id = 1) {
+    /**
+     * Force a cookie to be a certain ID
+     *
+     * @param int $id Row id for user
+     *
+     * @return void
+     */
+    public function testCookie($id = 1): void
+    {
         setCookie('user_id', 1);
     }
 
 
-    public function getName($id = 0) {
+    /**
+     * Fetch the name by the user id
+     *
+     * @param int $id Row id for user
+     *
+     * @return string
+     */
+    public function getName($id = 0)
+    {
         $sql = "SELECT Name from user where id = ?";
-        $query = $this->db->prepare($sql);
+        $query = $this->_db->prepare($sql);
         $query->bind_param('i', $id);
         $query->execute();
         $result = $query->get_result();
@@ -95,9 +134,17 @@ class PasswordUtils
         return isset($user['Name']) ? $user['Name'] : '';
     }
 
-    public function getPassword($id = 0) {
+    /**
+     * Fetch the encrypted password for a user
+     *
+     * @param int $id Row id for user
+     *
+     * @return string
+     */
+    public function getPassword($id = 0)
+    {
         $sql = "SELECT Password from user where id = ?";
-        $query = $this->db->prepare($sql);
+        $query = $this->_db->prepare($sql);
         $query->bind_param('i', $id);
         $query->execute();
         $result = $query->get_result();
@@ -105,25 +152,49 @@ class PasswordUtils
         return isset($row['Password']) ? $row['Password'] : '';
     }
 
-    public function insertUserRow(int $id, string $name, string $password)
+    /**
+     * Inserts a user row
+     *
+     * @param int $id Row id for user
+     * @param string $name name of the user
+     * @param string $password password for the user
+     *
+     * @return void
+     */
+    public function insertUserRow(int $id, string $name, string $password): void
     {
         $sql = 'INSERT INTO user (id, Name) VALUES(?, ?) ' .
             'ON DUPLICATE KEY UPDATE Name = ?';
-        $query = $this->db->prepare($sql);
+        $query = $this->_db->prepare($sql);
         $query->bind_param('iss', $id, $name, $name);
         $query->execute();
-        $this->setPassword($id, $password);
+        $this->_setPassword($id, $password);
     }
 
-    public function deleteUserRow(int $id)
+    /**
+     * Deletes a user row by ID
+     *
+     * @param int $id Row id for user
+     *
+     * @return void
+     */
+    public function deleteUserRow(int $id): void
     {
         $sql = "DELETE FROM user WHERE id = ?";
-        $query = $this->db->prepare($sql);
+        $query = $this->_db->prepare($sql);
         $query->bind_param('i', $id);
         $query->execute();
     }
 
-    private function formSubmitted($userId = 0) {
+    /**
+     * Handles the form being submitted
+     *
+     * @param int $userId Row id for user
+     *
+     * @return string
+     */
+    private function _formSubmitted($userId = 0): string
+    {
         $password = $_REQUEST['password'];
         $password2 = $_REQUEST['password2'];
         $token = $_POST['token'];
@@ -154,37 +225,57 @@ class PasswordUtils
             if ($error) {
                 return $error;
             }
-            $this->setPassword($userId, $password);
+            $this->_setPassword($userId, $password);
             return 'Password has been updated.';
         }
         return 'Something has failed';
     }
 
-    private function setPassword($userId, $password) {
+    /**
+     * Hash a plain text password and store it in the table user
+     *
+     * @param string $userId   row id for user
+     * @param string $password user password
+     *
+     * @return void
+     */
+    private function _setPassword(string $userId, string $password): void
+    {
         // hash password
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         // store password
         $sql = "UPDATE user SET password = ? WHERE id = ?";
-        $query = $this->db->prepare($sql);
+        $query = $this->_db->prepare($sql);
         $query->bind_param('si', $hashedPassword, $userId);
         $result = $query->execute();
     }
 
-    // create db table
-    private function createUserTable(): bool {
+    /**
+     * Create user table if it does not exist
+     *
+     * @return bool
+     */
+    private function _createUserTable(): bool
+    {
         $sql = "CREATE TABLE IF NOT EXISTS user (" .
             "id int NOT NULL PRIMARY KEY," .
             "Password varchar(255)," .
             "Name varchar(64))";
-        $exists = $this->db->query($sql);
+        $exists = $this->_db->query($sql);
         if (!$exists) {
             throw new Exception("Error creating user table");
         }
         return true;
     }
 
-    private function generateToken() {
+    /**
+     * Generate a CSRF token to store in the session
+     *
+     * @return string
+     */
+    private function _generateToken()
+    {
         $token = bin2hex(random_bytes(8));
         $_SESSION['token'] = $token;
         return $token;
