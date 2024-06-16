@@ -25,6 +25,7 @@ final class PasswordUtilsTest extends TestCase
 
     protected function tearDown(): void {
         $this->utils->deleteUserRow(1);
+        $this->utils->deleteUserRow(2);
     }
 
     public function testFetchTemplate() {
@@ -38,6 +39,21 @@ final class PasswordUtilsTest extends TestCase
     public function testGetName() {
         $name  = $this->utils->getName(1);
         $this->assertEquals('PHPUnit', $name, 'getName method failed');
+
+        // test that the name is sanitised
+        $userInputName = '<p>PHPUnit</br> possible user input</p>';
+        $this->utils->insertUserRow(2, $userInputName, 'plaintext');
+        $name  = $this->utils->getName(2);
+        $this->assertNotEquals($userInputName, $name);
+
+        $expectedName = 'PHPUnit possible user input';
+        $this->assertEquals($expectedName, $name);
+    }
+
+    public function testDeleteUser() {
+        $this->utils->deleteUserRow(1);
+        $name  = $this->utils->getName(1);
+        $this->assertEmpty($name);
     }
 
     public function testPassword() {
