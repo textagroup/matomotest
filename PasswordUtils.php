@@ -112,7 +112,7 @@ class PasswordUtils
      */
     public function testCookie($id = 1): void
     {
-        setCookie('user_id', 1);
+        setCookie('user_id', $id);
     }
 
 
@@ -131,7 +131,7 @@ class PasswordUtils
         $query->execute();
         $result = $query->get_result();
         $user = $result->fetch_array(MYSQLI_ASSOC);
-        return isset($user['Name']) ? $user['Name'] : '';
+        return isset($user['Name']) ? strip_tags($user['Name']) : '';
     }
 
     /**
