@@ -113,6 +113,6 @@ Further improvements could be made to the functionality and some of these are li
 
 ## Demo video
 
-Demo video of form nbeing uses and PHPUnit and WebdriverIO tests running
+Demo video of form being uses and PHPUnit and WebdriverIO tests running
 
 ![Demo](demo.webm)
